@@ -70,3 +70,40 @@ CREATE TABLE IF NOT EXISTS roles (
   KEY fk_username_idx (username),
   CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES users (username)
 ) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS owner_user_links (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  owner_id INT UNSIGNED NOT NULL,
+  username VARCHAR(20) NOT NULL,
+  verified TINYINT NOT NULL DEFAULT 1,
+  UNIQUE (username),
+  UNIQUE (owner_id),
+  FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE CASCADE,
+  FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS vet_availability_slots (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  vet_id INT UNSIGNED NOT NULL,
+  start_date_time DATETIME(3) NOT NULL,
+  end_date_time DATETIME(3) NOT NULL,
+  INDEX(vet_id),
+  FOREIGN KEY (vet_id) REFERENCES vets(id) ON DELETE CASCADE
+) engine=InnoDB;
+
+CREATE TABLE IF NOT EXISTS video_consultations (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  owner_id INT UNSIGNED NOT NULL,
+  vet_id INT UNSIGNED NOT NULL,
+  start_date_time DATETIME(3) NOT NULL,
+  end_date_time DATETIME(3) NOT NULL,
+  triage_level VARCHAR(16) NOT NULL,
+  triage_priority VARCHAR(16) NOT NULL,
+  status VARCHAR(16) NOT NULL,
+  reason VARCHAR(500) NOT NULL,
+  created_at DATETIME(3) NOT NULL,
+  INDEX(owner_id),
+  INDEX(vet_id,start_date_time,end_date_time),
+  FOREIGN KEY (owner_id) REFERENCES owners(id) ON DELETE CASCADE,
+  FOREIGN KEY (vet_id) REFERENCES vets(id) ON DELETE CASCADE
+) engine=InnoDB;
