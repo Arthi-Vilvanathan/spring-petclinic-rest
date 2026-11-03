@@ -75,3 +75,21 @@ INSERT INTO roles (username, role) VALUES
 ('admin', 'ROLE_OWNER_ADMIN'),
 ('admin', 'ROLE_VET_ADMIN'),
 ('admin', 'ROLE_ADMIN');
+
+-- JIRA-402 Minimal Seed Data
+
+-- Add OWNER_ADMIN user owner1 (same bcrypt hash as admin)
+INSERT INTO users (username, password, enabled) VALUES
+('owner1', '$2a$10$ymaklWBnpBKlgdMgkjWVF.GMGyvH8aDuTK.glFOaKw712LHtRRymS', TRUE);
+
+-- Assign ROLE_OWNER_ADMIN to owner1
+INSERT INTO roles (username, role) VALUES
+('owner1', 'ROLE_OWNER_ADMIN');
+
+-- Link owner1 -> existing owner id 1 (verified)
+INSERT INTO owner_user_links (owner_id, username, verified) VALUES
+(1, 'owner1', TRUE);
+
+-- Add a wide vet availability window for vet id 1 so bookings succeed
+INSERT INTO vet_availability (vet_id, start_time, end_time) VALUES
+(1, TIMESTAMP WITH TIME ZONE '2026-11-03T09:00:00Z', TIMESTAMP WITH TIME ZONE '2027-11-03T17:00:00Z');
