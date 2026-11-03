@@ -1,3 +1,6 @@
+DROP TABLE video_consultations IF EXISTS;
+DROP TABLE vet_availability_slots IF EXISTS;
+DROP TABLE owner_user_links IF EXISTS;
 DROP TABLE vet_specialties IF EXISTS;
 DROP TABLE vets IF EXISTS;
 DROP TABLE specialties IF EXISTS;
@@ -79,4 +82,41 @@ CREATE TABLE roles (
 );
 ALTER TABLE roles ADD CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES users (username);
 CREATE INDEX fk_username_idx ON roles (username);
+
+CREATE TABLE owner_user_links (
+  id        INTEGER IDENTITY PRIMARY KEY,
+  owner_id  INTEGER NOT NULL,
+  username  VARCHAR(20) NOT NULL,
+  verified  BOOLEAN DEFAULT TRUE NOT NULL
+);
+ALTER TABLE owner_user_links ADD CONSTRAINT fk_owner_user_links_owners FOREIGN KEY (owner_id) REFERENCES owners (id);
+ALTER TABLE owner_user_links ADD CONSTRAINT fk_owner_user_links_users FOREIGN KEY (username) REFERENCES users (username);
+ALTER TABLE owner_user_links ADD CONSTRAINT uq_owner_user_links_username UNIQUE (username);
+ALTER TABLE owner_user_links ADD CONSTRAINT uq_owner_user_links_owner_id UNIQUE (owner_id);
+
+CREATE TABLE vet_availability_slots (
+  id              INTEGER IDENTITY PRIMARY KEY,
+  vet_id          INTEGER NOT NULL,
+  start_date_time TIMESTAMP WITH TIME ZONE NOT NULL,
+  end_date_time   TIMESTAMP WITH TIME ZONE NOT NULL
+);
+ALTER TABLE vet_availability_slots ADD CONSTRAINT fk_vet_availability_slots_vets FOREIGN KEY (vet_id) REFERENCES vets (id);
+CREATE INDEX vet_availability_slots_vet_id ON vet_availability_slots (vet_id);
+
+CREATE TABLE video_consultations (
+  id              INTEGER IDENTITY PRIMARY KEY,
+  owner_id        INTEGER NOT NULL,
+  vet_id          INTEGER NOT NULL,
+  start_date_time TIMESTAMP WITH TIME ZONE NOT NULL,
+  end_date_time   TIMESTAMP WITH TIME ZONE NOT NULL,
+  triage_level    VARCHAR(16) NOT NULL,
+  triage_priority VARCHAR(16) NOT NULL,
+  status          VARCHAR(16) NOT NULL,
+  reason          VARCHAR(500) NOT NULL,
+  created_at      TIMESTAMP NOT NULL
+);
+ALTER TABLE video_consultations ADD CONSTRAINT fk_video_consultations_owners FOREIGN KEY (owner_id) REFERENCES owners (id);
+ALTER TABLE video_consultations ADD CONSTRAINT fk_video_consultations_vets FOREIGN KEY (vet_id) REFERENCES vets (id);
+CREATE INDEX video_consultations_owner_id ON video_consultations (owner_id);
+CREATE INDEX video_consultations_vet_id ON video_consultations (vet_id);
 
