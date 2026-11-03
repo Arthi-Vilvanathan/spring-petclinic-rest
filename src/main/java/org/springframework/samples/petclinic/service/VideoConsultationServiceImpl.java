@@ -1,6 +1,7 @@
 package org.springframework.samples.petclinic.service;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Objects;
 
 import org.slf4j.Logger;
@@ -81,7 +82,8 @@ public class VideoConsultationServiceImpl implements VideoConsultationService {
         consultation.setEndDateTime(end);
 
         // Map OpenAPI-generated enums to domain enums by name (same constants).
-        TriageLevel triageLevel = TriageLevel.valueOf(request.getTriageLevel().getValue());
+        // Avoid relying on generator-specific getValue()/toString() behavior.
+        TriageLevel triageLevel = TriageLevel.valueOf(request.getTriageLevel().name());
         consultation.setTriageLevel(triageLevel);
         consultation.setTriagePriority(derivePriority(triageLevel));
         consultation.setReason(request.getReason());
@@ -100,7 +102,7 @@ public class VideoConsultationServiceImpl implements VideoConsultationService {
             .triageLevel(request.getTriageLevel())
             .triagePriority(toDtoPriority(saved.getTriagePriority()))
             .status(EmergencyVideoConsultationConfirmationDto.StatusEnum.CONFIRMED)
-            .createdAt(saved.getCreatedAt().atOffset(OffsetDateTime.now().getOffset()));
+            .createdAt(OffsetDateTime.ofInstant(saved.getCreatedAt(), ZoneOffset.UTC));
     }
 
     private Owner resolveVerifiedOwner(String username) {
