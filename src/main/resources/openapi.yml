@@ -25,6 +25,8 @@ tags:
     description: Endpoints related to vets.
   - name: visits
     description: Endpoints related to vet visits.
+  - name: video-consultations
+    description: Endpoints related to booking emergency video consultations.
   - name: pettypes
     description: Endpoints related to pet types.
   - name: specialties
@@ -1341,6 +1343,63 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /video-consultations/emergency:
+    post:
+      tags:
+        - video-consultations
+      operationId: bookEmergencyVideoConsultation
+      summary: Book an emergency video consultation
+      description: Books an emergency video consultation with a veterinarian.
+      requestBody:
+        description: Emergency video consultation booking request.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmergencyVideoConsultationRequest'
+        required: true
+      responses:
+        201:
+          description: Emergency video consultation successfully booked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmergencyVideoConsultationConfirmation'
+        400:
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        401:
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        403:
+          description: Forbidden.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        404:
+          description: Not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        409:
+          description: Conflict.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        500:
+          description: Server error.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /specialties:
     get:
       tags:
@@ -1951,6 +2010,124 @@ components:
         - detail
         - timestamp
         - schemaValidationErrors
+    TriageLevel:
+      title: Triage level
+      description: The assessed triage level for an emergency consultation request.
+      type: string
+      enum:
+        - MILD
+        - MODERATE
+        - SEVERE
+    TriagePriority:
+      title: Triage priority
+      description: Priority derived from triage level.
+      type: string
+      enum:
+        - LOW
+        - MEDIUM
+        - HIGH
+    EmergencyVideoConsultationRequest:
+      title: Emergency video consultation request
+      description: Request payload for booking an emergency video consultation.
+      type: object
+      properties:
+        vetId:
+          title: Vet ID
+          description: The ID of the veterinarian.
+          type: integer
+          format: int32
+          minimum: 1
+          example: 1
+        startDateTime:
+          title: Start date time
+          description: The start date and time for the consultation.
+          type: string
+          format: date-time
+          example: '2026-11-03T10:00:00Z'
+        endDateTime:
+          title: End date time
+          description: The end date and time for the consultation.
+          type: string
+          format: date-time
+          example: '2026-11-03T10:15:00Z'
+        triageLevel:
+          $ref: '#/components/schemas/TriageLevel'
+        reason:
+          title: Reason
+          description: Reason for the emergency consultation.
+          type: string
+          minLength: 1
+          maxLength: 500
+          example: 'My pet is having trouble breathing.'
+      required:
+        - vetId
+        - startDateTime
+        - endDateTime
+        - triageLevel
+        - reason
+    EmergencyVideoConsultationConfirmation:
+      title: Emergency video consultation confirmation
+      description: Confirmation returned after successfully booking an emergency video consultation.
+      type: object
+      properties:
+        id:
+          title: ID
+          description: The ID of the booked consultation.
+          type: integer
+          format: int32
+          readOnly: true
+          example: 1
+        ownerId:
+          title: Owner ID
+          description: The ID of the owner.
+          type: integer
+          format: int32
+          example: 1
+        vetId:
+          title: Vet ID
+          description: The ID of the veterinarian.
+          type: integer
+          format: int32
+          example: 1
+        startDateTime:
+          title: Start date time
+          description: The start date and time for the consultation.
+          type: string
+          format: date-time
+          example: '2026-11-03T10:00:00Z'
+        endDateTime:
+          title: End date time
+          description: The end date and time for the consultation.
+          type: string
+          format: date-time
+          example: '2026-11-03T10:15:00Z'
+        triageLevel:
+          $ref: '#/components/schemas/TriageLevel'
+        triagePriority:
+          $ref: '#/components/schemas/TriagePriority'
+        status:
+          title: Status
+          description: Booking status.
+          type: string
+          enum:
+            - CONFIRMED
+          example: CONFIRMED
+        createdAt:
+          title: Created at
+          description: The timestamp when the booking was created.
+          type: string
+          format: date-time
+          example: '2026-11-03T09:58:00Z'
+      required:
+        - id
+        - ownerId
+        - vetId
+        - startDateTime
+        - endDateTime
+        - triageLevel
+        - triagePriority
+        - status
+        - createdAt
     ValidationMessage:
       title: Validation message
       description: Messages describing a validation error.
