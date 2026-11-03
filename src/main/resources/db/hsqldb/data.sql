@@ -58,3 +58,14 @@ INSERT INTO users(username, password, enabled) VALUES
 INSERT INTO roles (username, role) VALUES ('admin', 'ROLE_OWNER_ADMIN');
 INSERT INTO roles (username, role) VALUES ('admin', 'ROLE_VET_ADMIN');
 INSERT INTO roles (username, role) VALUES ('admin', 'ROLE_ADMIN');
+
+-- JIRA-402 minimal seed data (HSQL)
+INSERT INTO users(username, password, enabled) VALUES
+('owner1', '$2a$10$ymaklWBnpBKlgdMgkjWVF.GMGyvH8aDuTK.glFOaKw712LHtRRymS', TRUE);
+
+INSERT INTO roles (username, role) VALUES ('owner1', 'ROLE_OWNER_ADMIN');
+
+INSERT INTO owner_user_links (owner_id, username, verified) VALUES (1, 'owner1', TRUE);
+
+INSERT INTO vet_availability_slots (vet_id, start_date_time, end_date_time) VALUES
+(1, TIMESTAMP WITH TIME ZONE '2026-11-03 09:00:00+00:00', TIMESTAMP WITH TIME ZONE '2027-11-03 17:00:00+00:00');
