@@ -92,4 +92,4 @@ INSERT INTO owner_user_links (owner_id, username, verified) VALUES
 
 -- Add a wide vet availability window for vet id 1 so bookings succeed
 INSERT INTO vet_availability_slots (vet_id, start_date_time, end_date_time) VALUES
-(1, TIMESTAMP WITH TIME ZONE '2026-11-03T09:00:00Z', TIMESTAMP WITH TIME ZONE '2027-11-03T17:00:00Z');
+(1, TIMESTAMP WITH TIME ZONE '2026-11-03 09:00:00+00:00', TIMESTAMP WITH TIME ZONE '2027-11-03 17:00:00+00:00');
